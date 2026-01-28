@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Video {
+  id             String          @id @default(uuid())
+  title          String
+  description    String
+  youtubeId      String
+  thumbnailUrl   String
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  playbackTokens PlaybackToken[]
+}
+
+model PlaybackToken {
+  id      String   @id @default(uuid())
+  videoId String
+  token   String   @unique
+  expires DateTime
+  video   Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+}
